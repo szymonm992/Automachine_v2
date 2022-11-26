@@ -11,8 +11,9 @@ public class CharacterManager : AutomachineEntity<CharacterState>
     public override void Initialize()
     {
         base.Initialize();
-        if (automachine.IsReady)
+        if (stateMachine.IsReady)
         {
+
         }
     }
 

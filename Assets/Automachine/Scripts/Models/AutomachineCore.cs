@@ -17,6 +17,8 @@ namespace Automachine.Scripts.Models
         [Inject] private readonly IAutomachineState<TState>[] allStates;
         [Inject] private readonly AutomachineEntity<TState> connectedEntity;
 
+        [Inject(Id = "AutomachineDefaultState")] private readonly TState defaultState;
+
         private bool isReady = false;
 
         public bool IsReady => isReady;

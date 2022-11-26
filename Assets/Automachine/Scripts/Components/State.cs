@@ -14,9 +14,12 @@ namespace Automachine.Scripts.Components
         protected bool isActive;
         public bool IsActive => isActive;
 
+        /// <summary>
+        /// Called on state initialized
+        /// </summary>
         public virtual void Initialize()
         {
-            // optionally overridden
+            isActive = false;
         }
 
         /// <summary>
@@ -24,8 +27,10 @@ namespace Automachine.Scripts.Components
         /// </summary>
         public virtual void Tick()
         {
-            if (!this.IsActive) return;
-            // optionally overridden
+            if (!this.IsActive)
+            {
+                return;
+            }
         }
 
         /// <summary>
@@ -33,8 +38,10 @@ namespace Automachine.Scripts.Components
         /// </summary>
         public virtual void FixedTick()
         {
-            if (!this.IsActive) return;
-            // optionally overridden
+            if (!this.IsActive)
+            {
+                return;
+            }
         }
 
         /// <summary>
@@ -42,8 +49,10 @@ namespace Automachine.Scripts.Components
         /// </summary>
         public virtual void LateTick()
         {
-            if (!this.IsActive) return;
-            // optionally overridden
+            if (!this.IsActive)
+            {
+                return;
+            }
         }
 
         /// <summary>
@@ -60,7 +69,6 @@ namespace Automachine.Scripts.Components
         public virtual void StartState()
         {
             this.isActive = true;
-            Debug.Log("dfdsfds");
         }
 
     }

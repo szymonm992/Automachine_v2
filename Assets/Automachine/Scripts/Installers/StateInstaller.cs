@@ -30,8 +30,6 @@ public class StateInstaller : MonoInstaller
     {
         if (currentType != null)
         {
-            Container.BindInterfacesAndSelfTo<AutomachineEntity<TState>>().FromComponentsInHierarchy().AsCached();
-
             Array fields = currentType.GetEnumValues();
 
             foreach (var currentField in fields)
@@ -41,12 +39,17 @@ public class StateInstaller : MonoInstaller
 
                 if (field.IsDefined(typeof(StateEntityAttribute), false))
                 {
+                    if (field.IsDefined(typeof(DefaultStateAttribute), false))
+                    {
+                        Container.BindInstance(state).WithId("AutomachineDefaultState").WhenInjectedInto(typeof(AutomachineCore<TState>));
+                        AutomachineLogger.Log("Binding default state <color=white>" + state + "</color>");
+                    }
                     Type baseClassType = field.GetCustomAttribute<StateEntityAttribute>().BaseClassType;
                     Container.BindInterfacesAndSelfTo(baseClassType).FromNewComponentOnNewGameObject().AsCached().NonLazy();
                 }
             }
             Container.BindInterfacesAndSelfTo<AutomachineCore<TState>>().FromNew().AsCached();
-            Container.BindInterfacesAndSelfTo<AutomachineEntity<TState>>().FromComponentsInHierarchy().AsCached();
+            Container.BindInterfacesAndSelfTo<AutomachineEntity<TState>>().FromComponentInHierarchy().AsCached();
         }
     }
 
