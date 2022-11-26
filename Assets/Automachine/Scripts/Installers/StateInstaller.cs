@@ -9,6 +9,8 @@ using Automachine.Scripts.Attributes;
 using Automachine.Scripts;
 using Automachine.Scripts.Components;
 using Automachine.Scripts.Models;
+using System.ComponentModel;
+using Automachine.Scripts.Interfaces;
 
 public class StateInstaller : MonoInstaller
 {
@@ -21,12 +23,32 @@ public class StateInstaller : MonoInstaller
 
     private void InstallStateMachine()
     {
-        Container.BindInterfacesAndSelfTo<Automachine<CharacterState>>().FromNew().AsCached();
-        Container.BindInterfacesAndSelfTo<AutomachineEntity<CharacterState>>().FromComponentInHierarchy().AsCached();
+        
+
+        InstallStates<CharacterState>(typeof(CharacterState));
     }
 
     public void InstallStates<TState>(Type currentType) where TState : Enum
     {
+        if (currentType != null)
+        {
+            Array fields = currentType.GetEnumValues();
+
+            foreach (var currentField in fields)
+            {
+                TState state = ConvertObjectTo<TState>(currentField);
+                FieldInfo field = currentType.GetField(state.ToString());
+
+                if (field.IsDefined(typeof(StateEntityAttribute), false))
+                {
+                    Type baseClassType = field.GetCustomAttribute<StateEntityAttribute>().BaseClassType;
+                    Container.BindInterfacesAndSelfTo(baseClassType).FromNewComponentOnNewGameObject().AsCached().NonLazy();
+                }
+
+            }
+            Container.BindInterfacesAndSelfTo<Automachine<TState>>().FromNew().AsCached();
+            Container.BindInterfacesAndSelfTo<AutomachineEntity<TState>>().FromComponentInHierarchy().AsCached();
+        }
     }
 
     private void SearchForEnumWithAttribute<T>() where T : Attribute

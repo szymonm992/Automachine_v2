@@ -68,10 +68,6 @@ public class AutomachineInstaller : MonoInstaller
                    AutomachineLogger.Log("Binding default state <color=white>" + state + "</color>");
                 }
                 Type baseClassType = field.GetCustomAttribute<StateEntityAttribute>().BaseClassType;
-
-                //Container.BindInterfacesAndSelfTo(baseClassType).AsCached();
-                //Container.BindFactory<IAutomachineState<TState>, StateFactory<TState>>().To(baseClassType);
-                //Container.BindInstance(state).WhenInjectedInto(baseClassType);
             }
 
         }

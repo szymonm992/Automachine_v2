@@ -13,7 +13,6 @@ public class CharacterManager : AutomachineEntity<CharacterState>
         base.Initialize();
         if (automachine.IsReady)
         {
-            Debug.Log("character state ready on "+gameObject.name);
         }
     }
 

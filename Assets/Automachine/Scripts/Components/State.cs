@@ -1,3 +1,4 @@
+using Automachine.Scripts.Interfaces;
 using Automachine.Scripts.Models;
 using System;
 using UnityEngine;
@@ -6,28 +7,11 @@ using Zenject;
 
 namespace Automachine.Scripts.Components
 {
-    public abstract class State<TState> : IInitializable, ITickable, IFixedTickable, ILateTickable, IDisposable where TState : Enum
+    public abstract class State<TState> : MonoBehaviour, IInitializable, ITickable, IFixedTickable, ILateTickable, IDisposable, IAutomachineState<TState> where TState : Enum
     {
-        [Inject] private readonly Automachine<TState> connectedMachine;
-
-        protected readonly TState connectedState;
-
+        [Inject] protected readonly Automachine<TState> stateMachine;
         protected bool isActive;
         public bool IsActive => isActive;
-        public TState ConnectedState => connectedState;
-
-        /// <summary>
-        /// Passes params connected to the entity that handles states
-        /// </summary>
-        /// <param name="inputMachine">State machine as param</param>
-        public void UpdateMachine()
-        {
-        }
-
-        public State(TState state)
-        {
-            this.connectedState = state;
-        }
 
         public virtual void Initialize()
         {
