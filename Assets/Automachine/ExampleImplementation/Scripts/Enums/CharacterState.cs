@@ -6,5 +6,7 @@ public enum CharacterState
 {
     [DefaultState, StateEntity(typeof(Idle))]
     Idle,
+    [StateEntity(typeof(Walking))]
+    Walking,
 }
 

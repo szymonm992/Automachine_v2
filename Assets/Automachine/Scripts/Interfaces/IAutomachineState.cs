@@ -9,7 +9,7 @@ namespace Automachine.Scripts.Interfaces
     {
         public bool IsActive { get; }
 
-        public void Start();
+        public void StartState();
 
     }
 }

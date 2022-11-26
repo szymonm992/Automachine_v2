@@ -8,9 +8,9 @@ public class Idle : State<CharacterState>
 
     [Inject] private readonly Animator animator;
 
-    public override void Start()
+    public override void StartState()
     {
-        base.Start();
+        base.StartState();
         Debug.Log("idle state started for entity "+ stateMachine.ConnectedEntity.gameObject.name);
     }
 

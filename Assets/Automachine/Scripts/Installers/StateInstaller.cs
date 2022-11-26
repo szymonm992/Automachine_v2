@@ -23,8 +23,6 @@ public class StateInstaller : MonoInstaller
 
     private void InstallStateMachine()
     {
-        
-
         InstallStates<CharacterState>(typeof(CharacterState));
     }
 
@@ -32,6 +30,8 @@ public class StateInstaller : MonoInstaller
     {
         if (currentType != null)
         {
+            Container.BindInterfacesAndSelfTo<AutomachineEntity<TState>>().FromComponentsInHierarchy().AsCached();
+
             Array fields = currentType.GetEnumValues();
 
             foreach (var currentField in fields)
@@ -44,10 +44,9 @@ public class StateInstaller : MonoInstaller
                     Type baseClassType = field.GetCustomAttribute<StateEntityAttribute>().BaseClassType;
                     Container.BindInterfacesAndSelfTo(baseClassType).FromNewComponentOnNewGameObject().AsCached().NonLazy();
                 }
-
             }
-            Container.BindInterfacesAndSelfTo<Automachine<TState>>().FromNew().AsCached();
-            Container.BindInterfacesAndSelfTo<AutomachineEntity<TState>>().FromComponentInHierarchy().AsCached();
+            Container.BindInterfacesAndSelfTo<AutomachineCore<TState>>().FromNew().AsCached();
+            Container.BindInterfacesAndSelfTo<AutomachineEntity<TState>>().FromComponentsInHierarchy().AsCached();
         }
     }
 

@@ -39,40 +39,7 @@ public class AutomachineInstaller : MonoInstaller
 
     public void InstallStates<TState>(Type currentType) where TState : Enum
     {
-        if (currentType == null)
-        {
-            AutomachineLogger.LogError("Provided type is null! Canceling state machine creation");
-            return;
-        }
-        else
-        {
-            AutomachineLogger.Log("Found enum of type <color=white>" + currentType.Name + "</color> that matches Automachine criteria. Creating a state machine...");
-            //Container.BindInstance(currentType).WhenInjectedInto(typeof(TransitionsManager<TState>));
-        }
-
-
-        Array fields = currentType.GetEnumValues();
-
-        foreach (var currentField in fields)
-        {
-            TState state = ConvertObjectTo<TState>(currentField);
-            FieldInfo field = currentType.GetField(state.ToString());
-
-            if (field.IsDefined(typeof(StateEntityAttribute), false))
-            {
-               AutomachineLogger.Log("Creating state: <color=white>" + state + "</color>");
-
-                if (field.IsDefined(typeof(DefaultStateAttribute), false))
-                {
-                    Container.BindInstance(state).WithId("AutomachineDefaultState").WhenInjectedInto(typeof(Automachine<TState>));
-                   AutomachineLogger.Log("Binding default state <color=white>" + state + "</color>");
-                }
-                Type baseClassType = field.GetCustomAttribute<StateEntityAttribute>().BaseClassType;
-            }
-
-        }
-
-        Container.BindInterfacesAndSelfTo<AutomachineEntity<TState>>().FromComponentsInHierarchy().AsCached();
+        
     }
 
     private void SearchForEnumWithAttribute<T>() where T : Attribute

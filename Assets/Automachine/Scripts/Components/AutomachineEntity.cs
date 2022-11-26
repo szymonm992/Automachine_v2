@@ -8,7 +8,7 @@ namespace Automachine.Scripts.Components
     public abstract class AutomachineEntity<TState> : MonoBehaviour, IInitializable where TState : Enum
     {
         
-        [Inject] protected readonly Automachine<TState> automachine;
+        [Inject] protected readonly AutomachineCore<TState> automachine;
 
         public virtual void Initialize()
         {
@@ -20,6 +20,7 @@ namespace Automachine.Scripts.Components
 
         public virtual void OnDestroy()
         {
+            automachine.Dispose();
         }
     }
 }

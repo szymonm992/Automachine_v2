@@ -9,7 +9,7 @@ namespace Automachine.Scripts.Components
 {
     public abstract class State<TState> : MonoBehaviour, IAutomachineState<TState> where TState : Enum
     {
-        [Inject] protected readonly Automachine<TState> stateMachine;
+        [Inject] protected readonly AutomachineCore<TState> stateMachine;
 
         protected bool isActive;
         public bool IsActive => isActive;
@@ -57,9 +57,10 @@ namespace Automachine.Scripts.Components
         /// <summary>
         /// Whenever we override we should remember about calling base type or activate manually
         /// </summary>
-        public virtual void Start()
+        public virtual void StartState()
         {
             this.isActive = true;
+            Debug.Log("dfdsfds");
         }
 
     }

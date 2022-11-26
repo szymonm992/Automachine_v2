@@ -12,22 +12,21 @@ using Automachine.Scripts.Interfaces;
 
 namespace Automachine.Scripts.Models
 {
-    public class Automachine<TState> : IInitializable, ITickable, IDisposable where TState : Enum
+    public class AutomachineCore<TState> : IInitializable, ITickable, IDisposable where TState : Enum
     {
         [Inject] private readonly IAutomachineState<TState>[] allStates;
-        [Inject] private AutomachineEntity<TState> connectedEntity;
-
+        [Inject] private readonly AutomachineEntity<TState> connectedEntity;
 
         private bool isReady = false;
 
         public bool IsReady => isReady;
         public AutomachineEntity<TState> ConnectedEntity => connectedEntity;
+
         public void Initialize()
         {
             isReady = true;
             Debug.Log("initialized automachine with "+allStates.Count() + " states" + connectedEntity.gameObject.name);
         }
-
 
         public void Tick()
         {
