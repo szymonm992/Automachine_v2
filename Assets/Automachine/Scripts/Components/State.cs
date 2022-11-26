@@ -7,9 +7,10 @@ using Zenject;
 
 namespace Automachine.Scripts.Components
 {
-    public abstract class State<TState> : MonoBehaviour, IInitializable, ITickable, IFixedTickable, ILateTickable, IDisposable, IAutomachineState<TState> where TState : Enum
+    public abstract class State<TState> : MonoBehaviour, IAutomachineState<TState> where TState : Enum
     {
         [Inject] protected readonly Automachine<TState> stateMachine;
+
         protected bool isActive;
         public bool IsActive => isActive;
 

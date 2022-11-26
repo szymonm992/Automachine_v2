@@ -5,6 +5,9 @@ using Automachine.Scripts.Components;
 
 public class Idle : State<CharacterState>
 {
+
+    [Inject] private readonly Animator animator;
+
     public override void Start()
     {
         base.Start();
