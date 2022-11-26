@@ -10,10 +10,11 @@ namespace Automachine.Scripts.Components
     public abstract class State<TState> : MonoBehaviour, IAutomachineState<TState> where TState : Enum
     {
         [Inject] protected readonly AutomachineCore<TState> stateMachine;
+        [Inject] protected readonly TState connectedState;
 
         protected bool isActive;
         public bool IsActive => isActive;
-
+        public TState ConnectedState => connectedState;
         /// <summary>
         /// Called on state initialized
         /// </summary>

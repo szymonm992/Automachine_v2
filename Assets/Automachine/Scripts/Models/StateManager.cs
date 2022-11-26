@@ -12,13 +12,127 @@ namespace Automachine.Scripts.Components
     public class StateManager<TState> : IInitializable, IDisposable where TState : Enum
     {
         [Inject] private readonly AutomachineCore<TState> stateMachine;
+        [Inject] private readonly IAutomachineState<TState>[] allStates;
+        [Inject(Id = "AutomachineDefaultState", Optional = true)] private TState defaultState;
+        [Inject] private readonly AutomachineDebugSettings debugSettings;
+
+        private TState currentState;
+        private TState previousState;
+
+        private IAutomachineState<TState> currentStateEntity = null;
+
+        public IAutomachineState<TState> CurrentStateEntity => currentStateEntity;
+        public TState CurrentState => currentState;
+        public TState PreviousState => previousState;
+        public TState DefaultState => defaultState;
+        public bool IsChangingState { get; private set; }
 
         public void Initialize()
         {
+            if(debugSettings.logCreatedStatesAmount)
+            {
+                AutomachineLogger.Log("<color=green>Successfully</color> created machine with <b>" + allStates.Length + "</b> states based on enum: <color=white>" + typeof(TState).Name + "</color>");
+            }
+            
 
+            if (defaultState == null)
+            {
+                //setting default state as first element of enum in case we didnt find any with DefaultState attribute
+                SetDefaultState(allStates.First().ConnectedState);
+                AutomachineLogger.Log("[Automachine missing attribute] " + "There is no state with <color=white>[DefaultState]</color> attribute. Selecting first of the list, which is: " + defaultState);
+            }
+            ChangeState(defaultState, true);
         }
+
+        public void ChangeStateDelayed(TState nextState, float delayInSeconds)
+        {
+            if (IsChangingState)
+            {
+                AutomachineLogger.LogError("Cannot change state while the state is being changed already");
+                return;
+            }
+            IsChangingState = true;
+            stateMachine.ConnectedEntity.StartNewCoroutine(() => {
+                IsChangingState = false;
+                ChangeState(nextState);
+            }, delayInSeconds);
+        }
+
+        public void ChangeState(TState state, bool firstRun = false)
+        {
+            if (IsChangingState)
+            {
+                AutomachineLogger.LogError("Cannot change state while the state is being changed already");
+                return;
+            }
+
+            if (!firstRun && currentState.Equals(state))
+            {
+                return;
+            }
+
+            IsChangingState = true;
+            if (currentStateEntity != null)
+            {
+                currentStateEntity.Dispose();
+                currentStateEntity = null;
+            }
+
+            previousState = currentState;
+            currentState = state;
+
+            currentStateEntity = GetStateFromList(state);
+
+            if (currentStateEntity == null)
+            {
+                AutomachineLogger.LogError("Entity of state <color=white>" + state + "</color> was not found!");
+            }
+
+            if (!firstRun)
+            {
+                if (debugSettings.logSwitchingState)
+                {
+                    AutomachineLogger.Log("Current state was switched to: <color=white>" + currentStateEntity.ConnectedState + "</color>");
+                }
+            }
+            else
+            {
+                if (debugSettings.logLaunchingDefaultState)
+                {
+                    AutomachineLogger.Log("Launching default state: <color=white>" + defaultState + "</color>");
+                }
+            }
+
+            currentStateEntity.StartState();
+            IsChangingState = false;
+        }
+
+        /// <summary>
+        /// Sets the default state for current Automachine instance
+        /// </summary>
+        /// <param name="newDefaultState">New default state</param>
+        public void SetDefaultState(TState newDefaultState) => defaultState = newDefaultState;
+
+        /// <summary>
+        /// Disposes state manager
+        /// </summary>
         public void Dispose()
         {
         }
+
+        private IAutomachineState<TState> GetStateFromList(TState inputState)
+        {
+            foreach (var state in allStates)
+            {
+                if (state.ConnectedState.Equals(inputState))
+                {
+                    return state;
+                }
+            }
+            return null;
+        }
+
+
+       
     }
 }

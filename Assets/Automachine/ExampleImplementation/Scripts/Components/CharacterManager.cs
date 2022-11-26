@@ -17,8 +17,7 @@ public class CharacterManager : AutomachineEntity<CharacterState>
         }
     }
 
-
-    public override void Update()
+    protected override void Update()
     {
         base.Update();
 

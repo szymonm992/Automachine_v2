@@ -16,7 +16,7 @@ namespace Automachine.Scripts.Models
     {
         [Inject] private readonly IAutomachineState<TState>[] allStates;
         [Inject] private readonly AutomachineEntity<TState> connectedEntity;
-
+        [Inject] private readonly AutomachineDebugSettings debugSettings;
         [Inject(Id = "AutomachineDefaultState")] private readonly TState defaultState;
 
         private bool isReady = false;
@@ -26,13 +26,16 @@ namespace Automachine.Scripts.Models
 
         public void Initialize()
         {
+            if (debugSettings.logConnectedMonoType)
+            {
+                AutomachineLogger.Log("Connected MonoBehaviour script is of type <color=white>" + (connectedEntity ? connectedEntity.GetType() : "null") + "</color>");
+            }
+
             isReady = true;
-            Debug.Log("initialized automachine with "+allStates.Count() + " states" + connectedEntity.gameObject.name);
         }
 
         public void Tick()
         {
-
             if (isReady)
             {
             }

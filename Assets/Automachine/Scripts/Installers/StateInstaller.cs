@@ -26,6 +26,7 @@ public class StateInstaller : MonoInstaller
 
     private void InstallStateMachine()
     {
+        Container.BindInstance(debugSettings).AsCached().NonLazy();
         InstallStates<CharacterState>(typeof(CharacterState));
     }
 
@@ -38,7 +39,10 @@ public class StateInstaller : MonoInstaller
         }
         else
         {
-            if (debugSettings.logFoundMatchingEnums) AutomachineLogger.Log("Found enum of type <color=white>" + currentType.Name + "</color> that matches Automachine criteria. Creating a state machine...");
+            if (debugSettings.logFoundMatchingEnums)
+            {
+                AutomachineLogger.Log("Found entity of type <color=white>" + currentType.Name + "</color> that matches Automachine criteria. Creating a state machine...");
+            }
             //Container.BindInstance(currentType).WhenInjectedInto(typeof(TransitionsManager<TState>));
         }
 
@@ -51,6 +55,11 @@ public class StateInstaller : MonoInstaller
 
             if (field.IsDefined(typeof(StateEntityAttribute), false))
             {
+                if (debugSettings.logCreatingStates)
+                {
+                    AutomachineLogger.Log("Creating state: <color=white>" + state + "</color>");
+                }
+
                 if (field.IsDefined(typeof(DefaultStateAttribute), false))
                 {
                     Container.BindInstance(state).WithId("AutomachineDefaultState").WhenInjectedInto(typeof(AutomachineCore<TState>));
@@ -58,11 +67,12 @@ public class StateInstaller : MonoInstaller
                 }
                 Type baseClassType = field.GetCustomAttribute<StateEntityAttribute>().BaseClassType;
                 Container.BindInterfacesAndSelfTo(baseClassType).FromNewComponentOnNewGameObject().AsCached().NonLazy();
+                Container.BindInstance(state).WhenInjectedInto(baseClassType);
             }
         }
         Container.BindInterfacesAndSelfTo<AutomachineCore<TState>>().FromNew().AsCached();
         Container.BindInterfacesAndSelfTo<AutomachineEntity<TState>>().FromComponentInHierarchy().AsCached();
-
+        Container.BindInterfacesAndSelfTo<StateManager<TState>>().FromNew().AsCached();
     }
 
     private void SearchForEnumWithAttribute<T>() where T : Attribute
