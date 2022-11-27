@@ -29,16 +29,16 @@ namespace Automachine.Scripts.Components
 
         public void Initialize()
         {
-            if(debugSettings.logCreatedStatesAmount)
-            {
-                AutomachineLogger.Log("<color=green>Successfully</color> created machine with <b>" + allStates.Length + "</b> states based on enum: <color=white>" + typeof(TState).Name + "</color>");
-            }
-
             if (defaultState == null)
             {
                 //setting default state as first element of enum in case we didnt find any with DefaultState attribute
                 SetDefaultState(allStates.First().ConnectedState);
                 AutomachineLogger.Log("[Automachine missing attribute] " + "There is no state with <color=white>[DefaultState]</color> attribute. Selecting first of the list, which is: " + defaultState);
+            }
+
+            if (debugSettings.logCreatedStatesAmount)
+            {
+                AutomachineLogger.Log("<color=green>Successfully</color> created machine with <b>" + allStates.Length + "</b> states based on enum: <color=white>" + typeof(TState).Name + "</color>");
             }
             ChangeState(defaultState, true);
         }

@@ -24,7 +24,6 @@ namespace Automachine.Scripts.Models
 
         public void Initialize()
         {
-            Debug.Log("init");
             selectedEnumProperties = GetEnumValuesAndNames(selectedEnumType);
         }
 
@@ -41,9 +40,9 @@ namespace Automachine.Scripts.Models
 
         private void UpdateAnyStateTransitions()
         {
-            if (allConditionalTransitions.Count > 0)
+            if (allAnyStateTransitions.Count > 0)
             {
-                foreach (var kvp in allConditionalTransitions)
+                foreach (var kvp in allAnyStateTransitions)
                 {
                     if (kvp.Value.FromState.Equals(stateManager.CurrentState) && kvp.Value.Condition?.Invoke() == true)
                     {
