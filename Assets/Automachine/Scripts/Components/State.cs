@@ -5,7 +5,6 @@ using System;
 using UnityEngine;
 using Zenject;
 
-
 namespace Automachine.Scripts.Components
 {
     public abstract class State<TState> : MonoBehaviour, IAutomachineState<TState> where TState : Enum
@@ -15,6 +14,7 @@ namespace Automachine.Scripts.Components
         [Inject] protected readonly SignalBus signalBus;
 
         protected bool isActive;
+
         public bool IsActive => isActive;
         public TState ConnectedState => connectedState;
         public AutomachineCore<TState> StateMachine => stateMachine;

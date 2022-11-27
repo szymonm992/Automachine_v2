@@ -1,5 +1,6 @@
 using Automachine.Scripts.Components;
 using Automachine.Scripts.Models;
+using Automachine.Scripts.Attributes;
 using System;
 
 namespace Automachine.Scripts.Signals
@@ -7,6 +8,7 @@ namespace Automachine.Scripts.Signals
     /// <summary>
     /// Signal raised after each state change.
     /// </summary>
+    [AutomachineSignal]
     public class OnStateChangedSignal<TState> where TState : Enum
     {
         public TState signalPreviousState;
@@ -18,6 +20,7 @@ namespace Automachine.Scripts.Signals
     /// <summary>
     /// Signal raised on each state exit.
     /// </summary>
+    [AutomachineSignal]
     public class OnStateExit<TState> where TState : Enum
     {
         public TState signalStateDisposed;
@@ -28,11 +31,11 @@ namespace Automachine.Scripts.Signals
     /// <summary>
     /// Signal raised on each state enter.
     /// </summary>
+    [AutomachineSignal]
     public class OnStateEnter<TState> where TState : Enum
     {
         public TState signalStateStarted;
         public AutomachineCore<TState> connectedStateMachine;
         public AutomachineEntity<TState> connectedEntity;
     }
-
 }

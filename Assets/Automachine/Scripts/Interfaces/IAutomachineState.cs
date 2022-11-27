@@ -10,6 +10,7 @@ namespace Automachine.Scripts.Interfaces
         public bool IsActive { get; }
         public TState ConnectedState { get; }
         public AutomachineCore<TState> StateMachine { get; }
+
         public void StartState();
 
     }

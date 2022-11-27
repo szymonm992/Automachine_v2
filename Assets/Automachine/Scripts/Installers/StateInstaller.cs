@@ -91,10 +91,29 @@ public class StateInstaller : MonoInstaller
 
     public void InstallSignals<TState>() where TState : Enum
     {
-        Container.DeclareSignal<OnStateChangedSignal<TState>>();
-        Container.DeclareSignal<OnStateEnter<TState>>();
-        Container.DeclareSignal<OnStateExit<TState>>();
+        var automachineSignalTypes = SearchForClassWithAttribute<AutomachineSignalAttribute>();
+        
+        if(automachineSignalTypes.Any())
+        {
+            foreach(var signal in automachineSignalTypes)
+            {
+                var genericType = signal.MakeGenericType(typeof(TState));
+                Container.DeclareSignal(genericType);
+            }
+        }
     }
+
+    private IEnumerable<Type> SearchForClassWithAttribute<T>() where T : Attribute
+    {
+        List<Type> selectedEnumTypes = new();
+        foreach (Type enumType in Assembly.GetExecutingAssembly().GetTypes()
+                  .Where(x => x.IsClass && x.GetCustomAttribute<T>() != null))
+        {
+            selectedEnumTypes.Add(enumType);
+        }
+        return selectedEnumTypes;
+    }
+
 
     private IEnumerable<Type> SearchForEnumWithAttributeOnGameObject<T>() where T : Attribute
     {
