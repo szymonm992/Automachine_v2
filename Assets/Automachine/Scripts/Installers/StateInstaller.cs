@@ -9,9 +9,6 @@ using Automachine.Scripts.Attributes;
 using Automachine.Scripts;
 using Automachine.Scripts.Components;
 using Automachine.Scripts.Models;
-using System.ComponentModel;
-using Automachine.Scripts.Interfaces;
-using Automachine.Scripts.Signals;
 
 public class StateInstaller : MonoInstaller
 {
@@ -34,7 +31,7 @@ public class StateInstaller : MonoInstaller
         {
             object[] args = { type };
             InvokeGenericMethod("InstallStates", type, args);
-            InvokeGenericMethod("InstallSignals", type, null);
+            InvokeGenericMethod("CreateAnDeclareSignals", type, null);
         }
     }
 
@@ -89,7 +86,7 @@ public class StateInstaller : MonoInstaller
         Container.BindInterfacesAndSelfTo<AutomachineEntity<TState>>().FromComponentInHierarchy().AsCached();
     }
 
-    public void InstallSignals<TState>() where TState : Enum
+    public void CreateAnDeclareSignals<TState>() where TState : Enum
     {
         var automachineSignalTypes = SearchForClassWithAttribute<AutomachineSignalAttribute>();
         
