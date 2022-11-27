@@ -17,8 +17,6 @@ public class StateInstaller : MonoInstaller
 
     [SerializeField] private AutomachineDebugSettings debugSettings = new AutomachineDebugSettings();
 
-    private readonly List<Type> selectedEnumTypes = new List<Type>();
-
     public override void InstallBindings()
     {
         InstallStateMachine();
@@ -26,8 +24,18 @@ public class StateInstaller : MonoInstaller
 
     private void InstallStateMachine()
     {
+        var enumsOnGameObject = SearchForEnumWithAttributeOnGameObject<AutomachineStatesAttribute>();
         Container.BindInstance(debugSettings).AsCached().NonLazy();
-        InstallStates<CharacterState>(typeof(CharacterState));
+        //InstallStates<CharacterState>(typeof(CharacterState));
+
+        foreach (Type type in enumsOnGameObject)
+        {
+            var methodInfoGameStates = typeof(StateInstaller).GetMethod("InstallStates");//needs a public void
+            var gameStatesLauncher = methodInfoGameStates.MakeGenericMethod(type);
+            object[] args = { type };
+
+            gameStatesLauncher.Invoke(this, args);
+        }
     }
 
     public void InstallStates<TState>(Type currentType) where TState : Enum
@@ -65,7 +73,7 @@ public class StateInstaller : MonoInstaller
                 if (field.IsDefined(typeof(DefaultStateAttribute), false))
                 {
                     Container.BindInstance(state).WithId("AutomachineDefaultState").WhenInjectedInto(typeof(AutomachineCore<TState>));
-                    if(debugSettings.logBindingDefaultStates)
+                    if (debugSettings.logBindingDefaultStates)
                     {
                         AutomachineLogger.Log("Binding default state <color=white>" + state + "</color>");
                     }
@@ -81,13 +89,27 @@ public class StateInstaller : MonoInstaller
         Container.BindInterfacesAndSelfTo<AutomachineEntity<TState>>().FromComponentInHierarchy().AsCached();
     }
 
-    private void SearchForEnumWithAttribute<T>() where T : Attribute
+    private IEnumerable<Type> SearchForEnumWithAttributeOnGameObject<T>() where T : Attribute
     {
+        List<Type> selectedEnumTypes = new();
         foreach (Type enumType in Assembly.GetExecutingAssembly().GetTypes()
                   .Where(x => x.IsSubclassOf(typeof(Enum)) &&
                   x.GetCustomAttribute<T>() != null))
         {
-            selectedEnumTypes.Add(enumType);
+            var methodInfoValidation = typeof(StateInstaller).GetMethod("ValidateGameObjectHasEntity");
+            var entityValidator = methodInfoValidation.MakeGenericMethod(enumType);
+            object[] args = { enumType, selectedEnumTypes };
+
+            entityValidator.Invoke(this, args);
+        }
+        return selectedEnumTypes;
+    }
+
+    public void ValidateGameObjectHasEntity<TState>(Type type, List<Type> selectedEnumTypes) where TState : Enum
+    {
+        if (gameObject.GetComponent<AutomachineEntity<TState>>() != null)
+        {
+            selectedEnumTypes.Add(type);
         }
     }
 

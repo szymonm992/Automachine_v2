@@ -1,6 +1,5 @@
 using Automachine.Scripts.Attributes;
 
-
 [AutomachineStates]
 public enum CharacterState
 {
@@ -10,6 +9,5 @@ public enum CharacterState
     Walking,
     [StateEntity(typeof(Dead))]
     Dead,
-
 }
 
