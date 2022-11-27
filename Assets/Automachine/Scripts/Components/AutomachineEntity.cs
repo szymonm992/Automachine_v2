@@ -9,6 +9,7 @@ namespace Automachine.Scripts.Components
     public abstract class AutomachineEntity<TState> : MonoBehaviour, IInitializable where TState : Enum
     {
         [Inject] protected readonly AutomachineCore<TState> stateMachine;
+        [Inject] protected readonly SignalBus signalBus;
 
         /// <summary>
         /// Launches new coroutine

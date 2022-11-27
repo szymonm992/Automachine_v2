@@ -11,6 +11,7 @@ using Automachine.Scripts.Components;
 using Automachine.Scripts.Models;
 using System.ComponentModel;
 using Automachine.Scripts.Interfaces;
+using Automachine.Scripts.Signals;
 
 public class StateInstaller : MonoInstaller
 {
@@ -24,17 +25,16 @@ public class StateInstaller : MonoInstaller
 
     private void InstallStateMachine()
     {
-        var enumsOnGameObject = SearchForEnumWithAttributeOnGameObject<AutomachineStatesAttribute>();
+        SignalBusInstaller.Install(Container);
         Container.BindInstance(debugSettings).AsCached().NonLazy();
-        //InstallStates<CharacterState>(typeof(CharacterState));
+
+        var enumsOnGameObject = SearchForEnumWithAttributeOnGameObject<AutomachineStatesAttribute>();
 
         foreach (Type type in enumsOnGameObject)
         {
-            var methodInfoGameStates = typeof(StateInstaller).GetMethod("InstallStates");//needs a public void
-            var gameStatesLauncher = methodInfoGameStates.MakeGenericMethod(type);
             object[] args = { type };
-
-            gameStatesLauncher.Invoke(this, args);
+            InvokeGenericMethod("InstallStates", type, args);
+            InvokeGenericMethod("InstallSignals", type, null);
         }
     }
 
@@ -89,6 +89,13 @@ public class StateInstaller : MonoInstaller
         Container.BindInterfacesAndSelfTo<AutomachineEntity<TState>>().FromComponentInHierarchy().AsCached();
     }
 
+    public void InstallSignals<TState>() where TState : Enum
+    {
+        Container.DeclareSignal<OnStateChangedSignal<TState>>();
+        Container.DeclareSignal<OnStateEnter<TState>>();
+        Container.DeclareSignal<OnStateExit<TState>>();
+    }
+
     private IEnumerable<Type> SearchForEnumWithAttributeOnGameObject<T>() where T : Attribute
     {
         List<Type> selectedEnumTypes = new();
@@ -116,5 +123,12 @@ public class StateInstaller : MonoInstaller
     private T ConvertObjectTo<T>(object input)
     {
         return (T)Convert.ChangeType(input, typeof(T));
+    }
+
+    private void InvokeGenericMethod(string name, Type type, object[] args)
+    {
+        var method = typeof(StateInstaller).GetMethod(name);
+        var methodLauncher = method.MakeGenericMethod(type);
+        methodLauncher.Invoke(this, args);
     }
 }

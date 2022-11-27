@@ -2,6 +2,7 @@ using UnityEngine;
 using Zenject;
 
 using Automachine.Scripts.Components;
+using Automachine.Scripts.Signals;
 
 public class CharacterManager : AutomachineEntity<CharacterState>
 {
@@ -13,6 +14,8 @@ public class CharacterManager : AutomachineEntity<CharacterState>
         base.Initialize();
         if (stateMachine.IsReady)
         {
+            signalBus.Subscribe<OnStateChangedSignal<CharacterState>>(StateChanged);
+
             if (!stateMachine.HasTransition(CharacterState.Idle, CharacterState.Walking, () => xdd > 0 && fdsfsdf == 0))
             {
                 stateMachine.AddTransition(CharacterState.Idle, CharacterState.Walking, () => xdd > 0 && fdsfsdf == 0);
@@ -37,5 +40,12 @@ public class CharacterManager : AutomachineEntity<CharacterState>
         }
     }
 
+    public void StateChanged(OnStateChangedSignal<CharacterState> signal)
+    {
+        if (signal.connectedStateMachine == stateMachine)
+        {
+            Debug.Log("State was changed from: " + signal.signalPreviousState + " to: " + signal.signalNextState);
+        }
+    }
 
 }

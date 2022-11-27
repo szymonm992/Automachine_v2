@@ -6,11 +6,13 @@ using Automachine.Scripts.Models;
 using Automachine.Scripts.Interfaces;
 using System;
 using System.Linq;
+using Automachine.Scripts.Signals;
 
 namespace Automachine.Scripts.Components
 {
     public class StateManager<TState> : IInitializable, IDisposable where TState : Enum
     {
+        [Inject] private readonly SignalBus signalBus;
         [Inject] private readonly AutomachineCore<TState> stateMachine;
         [Inject] private readonly IAutomachineState<TState>[] allStates;
         [Inject] private readonly AutomachineDebugSettings debugSettings;
@@ -87,23 +89,31 @@ namespace Automachine.Scripts.Components
                 AutomachineLogger.LogError("Entity of state <color=white>" + state + "</color> was not found!");
             }
 
+            currentStateEntity.StartState();
+            IsChangingState = false;
+
+            signalBus.Fire(new OnStateChangedSignal<TState>()
+            {
+                signalPreviousState = previousState,
+                signalNextState = currentState,
+                connectedStateMachine = stateMachine,
+                connectedEntity = stateMachine.ConnectedEntity
+            });
+
             if (!firstRun)
             {
                 if (debugSettings.logSwitchingState)
                 {
-                    AutomachineLogger.Log("Current state was switched from: <color=white>"+ previousState + "</color> to: <color=white>" + currentState + "</color>");
+                    AutomachineLogger.Log("Current state was switched from: <color=white>" + previousState + "</color> to: <color=white>" + currentState + "</color>");
                 }
             }
             else
             {
                 if (debugSettings.logLaunchingDefaultState)
                 {
-                    AutomachineLogger.Log("Launching default state: <color=white>" + defaultState + "</color>");
+                    AutomachineLogger.Log("started default state: <color=white>" + defaultState + "</color>");
                 }
             }
-
-            currentStateEntity.StartState();
-            IsChangingState = false;
         }
 
         /// <summary>

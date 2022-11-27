@@ -1,5 +1,6 @@
 using Automachine.Scripts.Interfaces;
 using Automachine.Scripts.Models;
+using Automachine.Scripts.Signals;
 using System;
 using UnityEngine;
 using Zenject;
@@ -11,10 +12,13 @@ namespace Automachine.Scripts.Components
     {
         [Inject] protected readonly AutomachineCore<TState> stateMachine;
         [Inject] protected readonly TState connectedState;
+        [Inject] protected readonly SignalBus signalBus;
 
         protected bool isActive;
         public bool IsActive => isActive;
         public TState ConnectedState => connectedState;
+        public AutomachineCore<TState> StateMachine => stateMachine;
+
         /// <summary>
         /// Called on state initialized
         /// </summary>
@@ -62,6 +66,12 @@ namespace Automachine.Scripts.Components
         public virtual void Dispose()
         {
             this.isActive = false;
+            signalBus.Fire(new OnStateExit<TState>()
+            {
+                signalStateDisposed = this.ConnectedState,
+                connectedStateMachine = this.StateMachine,
+                connectedEntity = this.StateMachine.ConnectedEntity
+            });
         }
 
         /// <summary>
@@ -70,6 +80,12 @@ namespace Automachine.Scripts.Components
         public virtual void StartState()
         {
             this.isActive = true;
+            signalBus.Fire(new OnStateEnter<TState>()
+            {
+                signalStateStarted = this.ConnectedState,
+                connectedStateMachine = this.StateMachine,
+                connectedEntity = this.StateMachine.ConnectedEntity
+            });
         }
 
     }
