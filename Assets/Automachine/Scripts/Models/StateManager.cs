@@ -13,8 +13,8 @@ namespace Automachine.Scripts.Components
     {
         [Inject] private readonly AutomachineCore<TState> stateMachine;
         [Inject] private readonly IAutomachineState<TState>[] allStates;
-        [Inject(Id = "AutomachineDefaultState", Optional = true)] private TState defaultState;
         [Inject] private readonly AutomachineDebugSettings debugSettings;
+        [Inject(Id = "AutomachineDefaultState", Optional = true)] private TState defaultState;
 
         private TState currentState;
         private TState previousState;
@@ -33,7 +33,6 @@ namespace Automachine.Scripts.Components
             {
                 AutomachineLogger.Log("<color=green>Successfully</color> created machine with <b>" + allStates.Length + "</b> states based on enum: <color=white>" + typeof(TState).Name + "</color>");
             }
-            
 
             if (defaultState == null)
             {
@@ -51,6 +50,7 @@ namespace Automachine.Scripts.Components
                 AutomachineLogger.LogError("Cannot change state while the state is being changed already");
                 return;
             }
+
             IsChangingState = true;
             stateMachine.ConnectedEntity.StartNewCoroutine(() => {
                 IsChangingState = false;
@@ -80,7 +80,6 @@ namespace Automachine.Scripts.Components
 
             previousState = currentState;
             currentState = state;
-
             currentStateEntity = GetStateFromList(state);
 
             if (currentStateEntity == null)

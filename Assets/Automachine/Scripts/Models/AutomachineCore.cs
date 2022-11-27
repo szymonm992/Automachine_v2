@@ -17,6 +17,7 @@ namespace Automachine.Scripts.Models
         [Inject] private readonly IAutomachineState<TState>[] allStates;
         [Inject] private readonly AutomachineEntity<TState> connectedEntity;
         [Inject] private readonly AutomachineDebugSettings debugSettings;
+        [Inject] private readonly StateManager<TState> stateManager;
         [Inject(Id = "AutomachineDefaultState")] private readonly TState defaultState;
 
         private bool isReady = false;
@@ -38,11 +39,13 @@ namespace Automachine.Scripts.Models
         {
             if (isReady)
             {
+
             }
         }
 
         public void Dispose()
         {
+            stateManager.Dispose();
         }
     }
 }
