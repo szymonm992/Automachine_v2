@@ -240,6 +240,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 68da29f54fe8a5d468e4ce9e4adc1191, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  debugSettings:
+    logFoundMatchingEnums: 1
+    logCreatingStates: 0
+    logBindingDefaultStates: 0
+    logConnectedMonoType: 0
+    logCreatedStatesAmount: 1
+    logLaunchingDefaultState: 1
+    logSwitchingState: 1
 --- !u!114 &850565664
 MonoBehaviour:
   m_ObjectHideFlags: 0

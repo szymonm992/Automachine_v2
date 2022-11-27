@@ -91,7 +91,7 @@ namespace Automachine.Scripts.Components
             {
                 if (debugSettings.logSwitchingState)
                 {
-                    AutomachineLogger.Log("Current state was switched to: <color=white>" + currentStateEntity.ConnectedState + "</color>");
+                    AutomachineLogger.Log("Current state was switched from: <color=white>"+ previousState + "</color> to: <color=white>" + currentState + "</color>");
                 }
             }
             else

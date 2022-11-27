@@ -13,7 +13,13 @@ public class CharacterManager : AutomachineEntity<CharacterState>
         base.Initialize();
         if (stateMachine.IsReady)
         {
+            if (!stateMachine.HasTransition(CharacterState.Idle, CharacterState.Walking, () => xdd > 0 && fdsfsdf == 0))
+            {
+                stateMachine.AddTransition(CharacterState.Idle, CharacterState.Walking, () => xdd > 0 && fdsfsdf == 0);
+            }
 
+            stateMachine.AddTransition(CharacterState.Walking, CharacterState.Dead, () => xdd > 10 && fdsfsdf < 0);
+            stateMachine.AddAnyStateTransition(CharacterState.Idle, () => xdd > 12);
         }
     }
 

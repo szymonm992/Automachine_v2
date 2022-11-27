@@ -8,5 +8,8 @@ public enum CharacterState
     Idle,
     [StateEntity(typeof(Walking))]
     Walking,
+    [StateEntity(typeof(Dead))]
+    Dead,
+
 }
 

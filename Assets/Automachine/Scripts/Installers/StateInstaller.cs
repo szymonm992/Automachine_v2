@@ -43,8 +43,10 @@ public class StateInstaller : MonoInstaller
             {
                 AutomachineLogger.Log("Found entity of type <color=white>" + currentType.Name + "</color> that matches Automachine criteria. Creating a state machine...");
             }
-            //Container.BindInstance(currentType).WhenInjectedInto(typeof(TransitionsManager<TState>));
+            Container.BindInstance(currentType).WhenInjectedInto<TransitionsManager<TState>>();
         }
+
+        Container.BindInterfacesAndSelfTo<TransitionsManager<TState>>().FromNew().AsCached().NonLazy();
 
         Array fields = currentType.GetEnumValues();
 
@@ -63,16 +65,20 @@ public class StateInstaller : MonoInstaller
                 if (field.IsDefined(typeof(DefaultStateAttribute), false))
                 {
                     Container.BindInstance(state).WithId("AutomachineDefaultState").WhenInjectedInto(typeof(AutomachineCore<TState>));
-                    AutomachineLogger.Log("Binding default state <color=white>" + state + "</color>");
+                    if(debugSettings.logBindingDefaultStates)
+                    {
+                        AutomachineLogger.Log("Binding default state <color=white>" + state + "</color>");
+                    }
                 }
+
                 Type baseClassType = field.GetCustomAttribute<StateEntityAttribute>().BaseClassType;
                 Container.BindInterfacesAndSelfTo(baseClassType).FromNewComponentOnNewGameObject().AsCached().NonLazy();
                 Container.BindInstance(state).WhenInjectedInto(baseClassType);
             }
         }
+        Container.BindInterfacesAndSelfTo<StateManager<TState>>().FromNew().AsCached();
         Container.BindInterfacesAndSelfTo<AutomachineCore<TState>>().FromNew().AsCached();
         Container.BindInterfacesAndSelfTo<AutomachineEntity<TState>>().FromComponentInHierarchy().AsCached();
-        Container.BindInterfacesAndSelfTo<StateManager<TState>>().FromNew().AsCached();
     }
 
     private void SearchForEnumWithAttribute<T>() where T : Attribute
