@@ -10,11 +10,13 @@ using Automachine.Scripts.Components;
 using Automachine.Scripts.Models;
 using Automachine.Scripts.Interfaces;
 using Automachine.Scripts.Enums;
+using Automachine.Scripts.Signals;
 
 namespace Automachine.Scripts.Models
 {
     public class AutomachineCore<TState> : IInitializable, ITickable, IDisposable where TState : Enum
     {
+        [Inject] private readonly SignalBus signalBus;
         [Inject] private readonly IAutomachineState<TState>[] allStates;
         [Inject] private readonly AutomachineEntity<TState> connectedEntity;
         [Inject] private readonly AutomachineDebugSettings debugSettings;
@@ -34,6 +36,10 @@ namespace Automachine.Scripts.Models
             }
 
             isReady = true;
+            signalBus.Fire(new OnStateMachineInitialized<TState>()
+            {
+                connectedStateMachine = this,
+            });
         }
 
         #region TRANSITIONS HANDLING

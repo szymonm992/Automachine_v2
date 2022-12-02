@@ -9,6 +9,7 @@ using Automachine.Scripts.Attributes;
 using Automachine.Scripts;
 using Automachine.Scripts.Components;
 using Automachine.Scripts.Models;
+using Automachine.Scripts.Signals;
 
 public class StateInstaller : MonoInstaller
 {
@@ -94,7 +95,7 @@ public class StateInstaller : MonoInstaller
         
         if(automachineSignalTypes.Any())
         {
-            foreach(var signal in automachineSignalTypes)
+            foreach (var signal in automachineSignalTypes)
             {
                 var signalType = signal.MakeGenericType(typeof(TState));
                 Container.DeclareSignal(signalType);
@@ -105,6 +106,9 @@ public class StateInstaller : MonoInstaller
                         "for entity on "+gameObject.name);
                 }
             }
+
+            Container.BindSignal<OnStateMachineInitialized<TState>>()
+                   .ToMethod<AutomachineEntity<TState>>(entity => entity.OnStateMachineInitialized).FromResolve();
         }
     }
 

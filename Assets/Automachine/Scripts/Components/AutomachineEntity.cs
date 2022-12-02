@@ -3,6 +3,7 @@ using UnityEngine;
 using Zenject;
 using Automachine.Scripts.Models;
 using System.Collections;
+using Automachine.Scripts.Signals;
 
 namespace Automachine.Scripts.Components
 {
@@ -28,6 +29,14 @@ namespace Automachine.Scripts.Components
         /// Called when zenject successfully initialized entity
         /// </summary>
         public virtual void Initialize()
+        {
+        }
+
+        /// <summary>
+        /// Called when state machine was successfully initialized and marked as ready.
+        /// </summary>
+        /// <param name="OnStateMachineInitialized"></param>
+        public virtual void OnStateMachineInitialized(OnStateMachineInitialized<TState> OnStateMachineInitialized)
         {
         }
 

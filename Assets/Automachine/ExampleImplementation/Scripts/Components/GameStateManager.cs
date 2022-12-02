@@ -2,19 +2,17 @@ using UnityEngine;
 using Zenject;
 
 using Automachine.Scripts.Components;
+using Automachine.Scripts.Signals;
 
 public class GameStateManager : AutomachineEntity<GameState>
 {
 
-    public override void Initialize()
+    public override void OnStateMachineInitialized(OnStateMachineInitialized<GameState> OnStateMachineInitialized)
     {
-        base.Initialize();
-        if (stateMachine.IsReady)
+        base.OnStateMachineInitialized(OnStateMachineInitialized);
+        if (!stateMachine.HasTransition(GameState.Lobby, GameState.InGame))
         {
-            if(!stateMachine.HasTransition(GameState.Lobby, GameState.InGame))
-            {
-                stateMachine.AddAnyStateTransition(GameState.InGame, () => stateMachine != null);
-            }
+            stateMachine.AddAnyStateTransition(GameState.InGame, () => stateMachine != null);
         }
     }
 

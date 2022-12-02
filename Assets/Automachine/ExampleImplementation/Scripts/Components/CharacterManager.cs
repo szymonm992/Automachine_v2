@@ -9,21 +9,18 @@ public class CharacterManager : AutomachineEntity<CharacterState>
     public int xdd = 0;
     public int fdsfsdf = 0;
 
-    public override void Initialize()
+    public override void OnStateMachineInitialized(OnStateMachineInitialized<CharacterState> OnStateMachineInitialized)
     {
-        base.Initialize();
-        if (stateMachine.IsReady)
+        base.OnStateMachineInitialized(OnStateMachineInitialized);
+        signalBus.Subscribe<OnStateChangedSignal<CharacterState>>(StateChanged);
+
+        if (!stateMachine.HasTransition(CharacterState.Idle, CharacterState.Walking, () => xdd > 0 && fdsfsdf == 0))
         {
-            signalBus.Subscribe<OnStateChangedSignal<CharacterState>>(StateChanged);
-
-            if (!stateMachine.HasTransition(CharacterState.Idle, CharacterState.Walking, () => xdd > 0 && fdsfsdf == 0))
-            {
-                stateMachine.AddTransition(CharacterState.Idle, CharacterState.Walking, () => xdd > 0 && fdsfsdf == 0);
-            }
-
-            stateMachine.AddTransition(CharacterState.Walking, CharacterState.Dead, () => xdd > 10 && fdsfsdf < 0);
-            stateMachine.AddAnyStateTransition(CharacterState.Idle, () => xdd > 12);
+            stateMachine.AddTransition(CharacterState.Idle, CharacterState.Walking, () => xdd > 0 && fdsfsdf == 0);
         }
+
+        stateMachine.AddTransition(CharacterState.Walking, CharacterState.Dead, () => xdd > 10 && fdsfsdf < 0);
+        stateMachine.AddAnyStateTransition(CharacterState.Idle, () => xdd > 12);
     }
 
     protected override void Update()
