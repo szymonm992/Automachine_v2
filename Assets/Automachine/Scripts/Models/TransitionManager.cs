@@ -12,7 +12,7 @@ namespace Automachine.Scripts.Models
     public class TransitionsManager<TState> : IInitializable, IDisposable where TState : Enum
     {
         [Inject] private readonly StateManager<TState> stateManager;
-        [Inject] private readonly Type selectedEnumType;
+        [Inject] private readonly Type entityEnumType;
 
         private readonly Dictionary<string, StateTransition<TState>> allConditionalTransitions = new Dictionary<string, StateTransition<TState>>();
         private readonly Dictionary<string, StateTransition<TState>> allAnyStateTransitions = new Dictionary<string, StateTransition<TState>>();
@@ -24,7 +24,11 @@ namespace Automachine.Scripts.Models
 
         public void Initialize()
         {
-            selectedEnumProperties = GetEnumValuesAndNames(selectedEnumType);
+            selectedEnumProperties = GetEnumValuesAndNames(entityEnumType);
+        }
+
+        public void Dispose()
+        {
         }
 
         internal void UpdateTransitions()
@@ -154,11 +158,6 @@ namespace Automachine.Scripts.Models
             return result;
         }
         #endregion  
-
-        public void Dispose()
-        {
-
-        }
 
         private Dictionary<string, int> GetEnumValuesAndNames(Type enumType)
         {

@@ -35,12 +35,13 @@ namespace Automachine.Scripts.Components
             {
                 //setting default state as first element of enum in case we didnt find any with DefaultState attribute
                 SetDefaultState(allStates.First().ConnectedState);
-                AutomachineLogger.Log("[Automachine missing attribute] " + "There is no state with <color=white>[DefaultState]</color> attribute. Selecting first of the list, which is: " + defaultState);
+                AutomachineLogger.Log("[Automachine missing attribute] There is no state with <color=white>[DefaultState]</color> attribute. Selecting first of the list, which is: " + defaultState);
             }
 
             if (debugSettings.logCreatedStatesAmount)
             {
-                AutomachineLogger.Log("<color=green>Successfully</color> created machine with <b>" + allStates.Length + "</b> states based on enum: <color=white>" + typeof(TState).Name + "</color>");
+                AutomachineLogger.Log("<color=green>Successfully</color> state created machine with <b>" + allStates.Length + "</b> states based on enum: <color=white>"
+                    + typeof(TState).Name + "</color> for entity: <color=white>"+stateMachine.ConnectedEntity.name+"</color>");
             }
             ChangeState(defaultState, true);
         }
@@ -104,14 +105,15 @@ namespace Automachine.Scripts.Components
             {
                 if (debugSettings.logSwitchingState)
                 {
-                    AutomachineLogger.Log("Current state was switched from: <color=white>" + previousState + "</color> to: <color=white>" + currentState + "</color>");
+                    AutomachineLogger.Log("Current state was switched from: <color=white>" + previousState + "</color> to: <color=white>" + currentState 
+                        + "</color> on entity: <color=white>" + stateMachine.ConnectedEntity.name+"</color>");
                 }
             }
             else
             {
                 if (debugSettings.logLaunchingDefaultState)
                 {
-                    AutomachineLogger.Log("started default state: <color=white>" + defaultState + "</color>");
+                    AutomachineLogger.Log("Started default state: <color=white>" + defaultState + "</color> on entity: <color=white>" + stateMachine.ConnectedEntity.name+ "</color>");
                 }
             }
         }
@@ -120,7 +122,10 @@ namespace Automachine.Scripts.Components
         /// Sets the default state for current Automachine instance
         /// </summary>
         /// <param name="newDefaultState">New default state</param>
-        public void SetDefaultState(TState newDefaultState) => defaultState = newDefaultState;
+        public void SetDefaultState(TState newDefaultState)
+        {
+            defaultState = newDefaultState;
+        }
 
         /// <summary>
         /// Disposes state manager

@@ -19,5 +19,8 @@ namespace Automachine.Scripts.Models
         public bool logCreatedStatesAmount = true;
         public bool logLaunchingDefaultState = true;
         public bool logSwitchingState = true;
+
+        [Header("Signals")]
+        public bool logFoundSignals = true;
     }
 }

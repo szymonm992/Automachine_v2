@@ -31,7 +31,7 @@ public class StateInstaller : MonoInstaller
         {
             object[] args = { type };
             InvokeGenericMethod("InstallStates", type, args);
-            InvokeGenericMethod("CreateAnDeclareSignals", type, null);
+            InvokeGenericMethod("CreateAndDeclareSignals", type, null);
         }
     }
 
@@ -46,7 +46,8 @@ public class StateInstaller : MonoInstaller
         {
             if (debugSettings.logFoundMatchingEnums)
             {
-                AutomachineLogger.Log("Found entity of type <color=white>" + currentType.Name + "</color> that matches Automachine criteria. Creating a state machine...");
+                AutomachineLogger.Log("Found entity with enum type of: <color=white>" + currentType.Name + "</color>" +
+                    " for entity on: <color=white>" + gameObject.name+ "</color>. Creating a state machine...");
             }
             Container.BindInstance(currentType).WhenInjectedInto<TransitionsManager<TState>>();
         }
@@ -77,7 +78,8 @@ public class StateInstaller : MonoInstaller
                 }
 
                 Type baseClassType = field.GetCustomAttribute<StateEntityAttribute>().BaseClassType;
-                Container.BindInterfacesAndSelfTo(baseClassType).FromNewComponentOnNewGameObject().AsCached().NonLazy();
+                Container.BindInterfacesAndSelfTo(baseClassType).FromNewComponentOnNewGameObject()
+                    .WithGameObjectName("Automachine state: "+baseClassType.Name).AsCached().NonLazy();
                 Container.BindInstance(state).WhenInjectedInto(baseClassType);
             }
         }
@@ -86,7 +88,7 @@ public class StateInstaller : MonoInstaller
         Container.BindInterfacesAndSelfTo<AutomachineEntity<TState>>().FromComponentInHierarchy().AsCached();
     }
 
-    public void CreateAnDeclareSignals<TState>() where TState : Enum
+    public void CreateAndDeclareSignals<TState>() where TState : Enum
     {
         var automachineSignalTypes = SearchForClassWithAttribute<AutomachineSignalAttribute>();
         
@@ -94,23 +96,36 @@ public class StateInstaller : MonoInstaller
         {
             foreach(var signal in automachineSignalTypes)
             {
-                var genericType = signal.MakeGenericType(typeof(TState));
-                Container.DeclareSignal(genericType);
+                var signalType = signal.MakeGenericType(typeof(TState));
+                Container.DeclareSignal(signalType);
+
+                if (debugSettings.logFoundSignals)
+                {
+                    AutomachineLogger.Log("Declaring signals for enum type of: <color=white>" + signalType.Name + "</color> " +
+                        "for entity on "+gameObject.name);
+                }
             }
+        }
+    }
+
+    public void ValidateGameObjectHasEntity<TState>(Type type, List<Type> selectedEnumTypes) where TState : Enum
+    {
+        if (gameObject.GetComponent<AutomachineEntity<TState>>() != null)
+        {
+            selectedEnumTypes.Add(type);
         }
     }
 
     private IEnumerable<Type> SearchForClassWithAttribute<T>() where T : Attribute
     {
-        List<Type> selectedEnumTypes = new();
+        List<Type> selectedSignalTypes = new();
         foreach (Type enumType in Assembly.GetExecutingAssembly().GetTypes()
                   .Where(x => x.IsClass && x.GetCustomAttribute<T>() != null))
         {
-            selectedEnumTypes.Add(enumType);
+            selectedSignalTypes.Add(enumType);
         }
-        return selectedEnumTypes;
+        return selectedSignalTypes;
     }
-
 
     private IEnumerable<Type> SearchForEnumWithAttributeOnGameObject<T>() where T : Attribute
     {
@@ -126,14 +141,6 @@ public class StateInstaller : MonoInstaller
             entityValidator.Invoke(this, args);
         }
         return selectedEnumTypes;
-    }
-
-    public void ValidateGameObjectHasEntity<TState>(Type type, List<Type> selectedEnumTypes) where TState : Enum
-    {
-        if (gameObject.GetComponent<AutomachineEntity<TState>>() != null)
-        {
-            selectedEnumTypes.Add(type);
-        }
     }
 
     private T ConvertObjectTo<T>(object input)
