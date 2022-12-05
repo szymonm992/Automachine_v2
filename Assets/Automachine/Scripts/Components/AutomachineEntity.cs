@@ -15,7 +15,7 @@ namespace Automachine.Scripts.Components
         /// <summary>
         /// Launches new coroutine
         /// </summary>
-        /// <param name="callbackOnFinish">Callback, invoked whjen coroutine ends</param>
+        /// <param name="callbackOnFinish">Callback, invoked when coroutine ends</param>
         /// <param name="delaySeconds">A delay of coroutine</param>
         public void StartNewCoroutine(Action callbackOnFinish, float delaySeconds) => StartCoroutine(WaitForAndLaunch(callbackOnFinish, delaySeconds));
 
@@ -26,30 +26,21 @@ namespace Automachine.Scripts.Components
         }
 
         /// <summary>
-        /// Called when zenject successfully initialized entity
-        /// </summary>
-        public virtual void Initialize()
-        {
-        }
-
-        /// <summary>
-        /// Called when state machine was successfully initialized and marked as ready.
+        /// Raised when state machine was successfully initialized and marked as ready.
         /// </summary>
         /// <param name="OnStateMachineInitialized"></param>
         public virtual void OnStateMachineInitialized(OnStateMachineInitialized<TState> OnStateMachineInitialized)
         {
         }
 
-        /// <summary>
-        /// Called on each frame
-        /// </summary>
+        public virtual void Initialize()
+        {
+        }
+
         protected virtual void Update()
         {
         }
 
-        /// <summary>
-        /// Called on destroy of entity
-        /// </summary>
         protected virtual void OnDestroy()
         {
             stateMachine.Dispose();
