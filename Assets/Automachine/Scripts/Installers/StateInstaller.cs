@@ -74,7 +74,7 @@ public class StateInstaller : MonoInstaller
                     Container.BindInstance(state).WithId("AutomachineDefaultState").WhenInjectedInto(typeof(AutomachineCore<TState>));
                     if (debugSettings.logBindingDefaultStates)
                     {
-                        AutomachineLogger.Log("Binding default state <color=white>" + state + "</color>");
+                        AutomachineLogger.Log("Binding default state: <color=white>" + state + "</color>");
                     }
                 }
 
