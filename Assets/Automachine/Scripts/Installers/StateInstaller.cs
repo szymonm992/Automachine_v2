@@ -23,7 +23,11 @@ public class StateInstaller : MonoInstaller
 
     private void InstallStateMachine()
     {
-        SignalBusInstaller.Install(Container);
+        if(!Container.HasBinding(typeof(SignalBus)))
+        {
+            SignalBusInstaller.Install(Container);
+        }
+        
         Container.BindInstance(debugSettings).AsCached().NonLazy();
 
         var enumsOnGameObject = SearchForEnumWithAttributeOnGameObject<AutomachineStatesAttribute>();
