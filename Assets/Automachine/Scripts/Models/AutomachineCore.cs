@@ -253,6 +253,36 @@ namespace Automachine.Scripts.Models
         {
             stateManager.Dispose();
         }
+
+        public State<TState> GetState(TState stateValue)
+        {
+            if (allStates.Any())
+            {
+                foreach (var state in allStates)
+                {
+                    if (state.ConnectedState.Equals(stateValue))
+                    {
+                        return (State<TState>)state;
+                    }
+                }
+            }
+            return null;
+        }
+
+        public IAutomachineState<TState> GetStateOfType(Type type)
+        {
+            if(allStates.Any())
+            {
+                foreach (var state in allStates)
+                {
+                    if(state.GetType() == type)
+                    {
+                        return state;
+                    }
+                }
+            }
+            return null;
+        }
     }
 }
 
