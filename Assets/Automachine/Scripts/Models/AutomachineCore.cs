@@ -269,7 +269,7 @@ namespace Automachine.Scripts.Models
             return null;
         }
 
-        public IAutomachineState<TState> GetStateOfType(Type type)
+        public State<TState> GetStateOfType(Type type)
         {
             if(allStates.Any())
             {
@@ -277,7 +277,7 @@ namespace Automachine.Scripts.Models
                 {
                     if(state.GetType() == type)
                     {
-                        return state;
+                        return (State<TState>)state;
                     }
                 }
             }
