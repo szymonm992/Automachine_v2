@@ -50,7 +50,15 @@ namespace Automachine.Scripts.Models
                 {
                     if (kvp.Value.FromState.Equals(stateManager.CurrentState) && kvp.Value.Condition?.Invoke() == true)
                     {
-                        stateManager.ChangeState(kvp.Value.ToState);
+                        float delay = kvp.Value.TransitionDelay;
+                        if (delay == 0)
+                        {
+                            stateManager.ChangeState(kvp.Value.ToState);
+                        }
+                        else
+                        {
+                            stateManager.ChangeStateDelayed(kvp.Value.ToState, delay);
+                        }
                         return;
                     }
                 }
@@ -65,7 +73,15 @@ namespace Automachine.Scripts.Models
                 {
                     if (kvp.Value.FromState.Equals(stateManager.CurrentState) && kvp.Value.Condition?.Invoke() == true)
                     {
-                        stateManager.ChangeState(kvp.Value.ToState);
+                        float delay = kvp.Value.TransitionDelay;
+                        if (delay == 0)
+                        {
+                            stateManager.ChangeState(kvp.Value.ToState);
+                        }
+                        else
+                        {
+                            stateManager.ChangeStateDelayed(kvp.Value.ToState, delay);
+                        }
                         return;
                     }
                 }
@@ -147,6 +163,16 @@ namespace Automachine.Scripts.Models
             if (HasTransition(transitionId))
             {
                 allConditionalTransitions[transitionId].ChangeCondition(newCondition);
+                return true;
+            }
+            return false;
+        }
+
+        internal bool ChangeTransitionDelay(string transitionId, float newDelay)
+        {
+            if (HasTransition(transitionId))
+            {
+                allConditionalTransitions[transitionId].ChangeTransitionDelay(newDelay);
                 return true;
             }
             return false;

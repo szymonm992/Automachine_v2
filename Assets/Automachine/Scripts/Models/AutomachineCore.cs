@@ -51,7 +51,8 @@ namespace Automachine.Scripts.Models
         /// <param name="toState">Second state of transition</param>
         /// <param name="condition">Condition to be met to perform transition</param>
         /// <param name="OnTransitionComplete">Action to be executed on transition complete</param>
-        public void AddTransition(TState fromState, TState toState, Func<bool> condition, Action OnTransitionComplete = null)
+        /// <param name="delay">If not 0 then transition manager will wait for given amount of seconds</param>
+        public void AddTransition(TState fromState, TState toState, Func<bool> condition, float delay = 0f, Action OnTransitionComplete = null)
         {
             if (fromState.Equals(toState))
             {
@@ -59,7 +60,7 @@ namespace Automachine.Scripts.Models
                 return;
             }
             string id = transitionsManager.CreateTransitionId(fromState, toState);
-            StateTransition<TState> stateTransition = new StateTransition<TState>(fromState, toState, condition);
+            StateTransition<TState> stateTransition = new StateTransition<TState>(fromState, toState, condition, delay);
             AddTransition(id, stateTransition, OnTransitionComplete);
         }
 
