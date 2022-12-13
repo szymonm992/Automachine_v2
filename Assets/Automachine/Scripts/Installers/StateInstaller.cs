@@ -102,7 +102,7 @@ public class StateInstaller : MonoInstaller
             foreach (var signal in automachineSignalTypes)
             {
                 var signalType = signal.MakeGenericType(typeof(TState));
-                Container.DeclareSignal(signalType);
+                Container.DeclareSignal(signalType).OptionalSubscriber();
 
                 if (debugSettings.logFoundSignals)
                 {
