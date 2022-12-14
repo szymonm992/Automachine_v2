@@ -10,7 +10,7 @@ using Automachine.Scripts;
 using Automachine.Scripts.Components;
 using Automachine.Scripts.Models;
 using Automachine.Scripts.Signals;
-using UnityEditor.ShaderGraph.Internal;
+using Mono.Cecil;
 
 public class StateInstaller : MonoInstaller
 {
@@ -142,32 +142,21 @@ public class StateInstaller : MonoInstaller
         }
         return selectedSignalTypes;
     }
-
+    
     private IEnumerable<Type> SearchForEnumWithAttributeOnGameObject<T>() where T : Attribute
     {
-        int nr = 0;
+        List<Type> allTypesInProject = new();
         List<Type> selectedEnumTypes = new();
-        Debug.Log(Assembly.GetExecutingAssembly().GetName());
-        foreach (Type enumType in Assembly.GetExecutingAssembly().GetTypes())
-        {
-            nr++;
-            if(enumType.IsSubclassOf(typeof(Enum)))
-            {
-                Debug.Log(nr + " |issubclass| "+ enumType.ToString());
-            }
-            else
-            {
-                continue;
-            }
+        var assemblies = AppDomain.CurrentDomain.GetAssemblies();
 
-            if(enumType.GetCustomAttribute<T>() != null)
-            {
-                Debug.Log(nr + " |hasattr| " + enumType.ToString());
-            }
-            else
-            {
-                continue;
-            }
+        foreach(var assembly in assemblies)
+        {
+            allTypesInProject.AddRange(assembly.GetTypes().Where(type => !allTypesInProject.Contains(type) && type.IsSubclassOf(typeof(Enum)) &&
+                  type.GetCustomAttribute<T>() != null));
+        }
+
+        foreach (Type enumType in allTypesInProject)
+        {
             var methodInfoValidation = typeof(StateInstaller).GetMethod("ValidateGameObjectHasEntity");
             var entityValidator = methodInfoValidation.MakeGenericMethod(enumType);
             object[] args = { enumType, selectedEnumTypes };
