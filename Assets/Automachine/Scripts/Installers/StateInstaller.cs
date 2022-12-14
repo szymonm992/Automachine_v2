@@ -10,6 +10,7 @@ using Automachine.Scripts;
 using Automachine.Scripts.Components;
 using Automachine.Scripts.Models;
 using Automachine.Scripts.Signals;
+using UnityEditor.ShaderGraph.Internal;
 
 public class StateInstaller : MonoInstaller
 {
@@ -27,16 +28,23 @@ public class StateInstaller : MonoInstaller
         {
             SignalBusInstaller.Install(Container);
         }
-        
+
         Container.BindInstance(debugSettings).AsCached().NonLazy();
 
         var enumsOnGameObject = SearchForEnumWithAttributeOnGameObject<AutomachineStatesAttribute>();
 
-        foreach (Type type in enumsOnGameObject)
+        if(enumsOnGameObject.Any())
         {
-            object[] args = { type };
-            InvokeGenericMethod("InstallStates", type, args);
-            InvokeGenericMethod("CreateAndDeclareSignals", type, null);
+            foreach (Type type in enumsOnGameObject)
+            {
+                object[] args = { type };
+                InvokeGenericMethod("InstallStates", type, args);
+                InvokeGenericMethod("CreateAndDeclareSignals", type, null);
+            }
+        }
+        else
+        {
+            AutomachineLogger.LogError("Automachine hasnt found any matching types in assembly!");
         }
     }
 
@@ -137,11 +145,29 @@ public class StateInstaller : MonoInstaller
 
     private IEnumerable<Type> SearchForEnumWithAttributeOnGameObject<T>() where T : Attribute
     {
+        int nr = 0;
         List<Type> selectedEnumTypes = new();
-        foreach (Type enumType in Assembly.GetExecutingAssembly().GetTypes()
-                  .Where(x => x.IsSubclassOf(typeof(Enum)) &&
-                  x.GetCustomAttribute<T>() != null))
+        Debug.Log(Assembly.GetExecutingAssembly().GetName());
+        foreach (Type enumType in Assembly.GetExecutingAssembly().GetTypes())
         {
+            nr++;
+            if(enumType.IsSubclassOf(typeof(Enum)))
+            {
+                Debug.Log(nr + " |issubclass| "+ enumType.ToString());
+            }
+            else
+            {
+                continue;
+            }
+
+            if(enumType.GetCustomAttribute<T>() != null)
+            {
+                Debug.Log(nr + " |hasattr| " + enumType.ToString());
+            }
+            else
+            {
+                continue;
+            }
             var methodInfoValidation = typeof(StateInstaller).GetMethod("ValidateGameObjectHasEntity");
             var entityValidator = methodInfoValidation.MakeGenericMethod(enumType);
             object[] args = { enumType, selectedEnumTypes };
