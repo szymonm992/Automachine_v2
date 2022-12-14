@@ -45,6 +45,16 @@ namespace Automachine.Scripts.Models
         #region TRANSITIONS HANDLING
 
         /// <summary>
+        /// Changes current state, skips transitions.
+        /// </summary>
+        /// <param name="desiredState">Desired new state</param>
+        /// <param name="delay">Delay of execution</param>
+        public void ChangeState(TState desiredState, float delay = 0f)
+        {
+            transitionsManager.ChangeState(desiredState, delay);
+        }
+
+        /// <summary>
         /// Creates transition from given to desired state
         /// </summary>
         /// <param name="fromState">First state of transition</param>

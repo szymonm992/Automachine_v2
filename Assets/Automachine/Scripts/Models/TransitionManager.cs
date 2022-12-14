@@ -42,6 +42,18 @@ namespace Automachine.Scripts.Models
             UpdateConditionalTransitions();
         }
 
+        internal void ChangeState(TState newState, float delay = 0f)
+        {
+            if (delay == 0)
+            {
+                stateManager.ChangeState(newState);
+            }
+            else
+            {
+                stateManager.ChangeStateDelayed(newState, delay);
+            }
+        }
+
         private void UpdateAnyStateTransitions()
         {
             if (allAnyStateTransitions.Count > 0)
