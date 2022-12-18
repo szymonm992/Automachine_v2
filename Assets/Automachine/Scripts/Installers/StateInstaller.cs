@@ -10,7 +10,6 @@ using Automachine.Scripts;
 using Automachine.Scripts.Components;
 using Automachine.Scripts.Models;
 using Automachine.Scripts.Signals;
-using Mono.Cecil;
 
 public class StateInstaller : MonoInstaller
 {
