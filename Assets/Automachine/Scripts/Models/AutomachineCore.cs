@@ -27,6 +27,9 @@ namespace Automachine.Scripts.Models
 
         public bool IsReady => isReady;
         public AutomachineEntity<TState> ConnectedEntity => connectedEntity;
+        public TState CurrentState => stateManager.CurrentState;
+        public TState PreviousState => stateManager.PreviousState;
+        public TState DefaultState => stateManager.DefaultState;
 
         public void Initialize()
         {
