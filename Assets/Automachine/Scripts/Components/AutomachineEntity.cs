@@ -31,6 +31,7 @@ namespace Automachine.Scripts.Components
         /// <param name="OnStateMachineInitialized"></param>
         public virtual void OnStateMachineInitialized(OnStateMachineInitialized<TState> OnStateMachineInitialized)
         {
+            //REVIEW: Czemu nazwa argumentu wielką literą
         }
 
         public virtual void Initialize()
@@ -45,7 +46,7 @@ namespace Automachine.Scripts.Components
         {
             stateMachine.Dispose();
         }
-
+        //REVIEW: w kilku plikach są takie endline'y z dupy na końcu klasy.
         
     }
 }

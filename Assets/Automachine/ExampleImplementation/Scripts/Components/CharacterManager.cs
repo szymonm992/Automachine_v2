@@ -1,5 +1,5 @@
 using UnityEngine;
-using Zenject;
+using Zenject; //REVIEW: referencja na Zenjecta, która nigdzie nie jest używana. Tego typu usingi są też w wielu innych miejscach w kodzie.
 
 using Automachine.Scripts.Components;
 using Automachine.Scripts.Signals;

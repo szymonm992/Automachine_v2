@@ -5,6 +5,9 @@ using System;
 
 namespace Automachine.Scripts.Signals
 {
+    //REVIEW: dlaczego sygnały nie mają po prostu referencji na IAutomachineState<TState>,
+    //skoro on zawiera wszystkie potrzebne informacje (enum, maszynę i entity)?
+
     /// <summary>
     /// Signal raised after automachine core was initialized successfully.
     /// Bound directly to a corresponding method on Automachine Entity
