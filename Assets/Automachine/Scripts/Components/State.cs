@@ -7,6 +7,7 @@ using Zenject;
 
 namespace Automachine.Scripts.Components
 {
+    //REVIEW: patrz uwagi do IAutomachineState
     public abstract class State<TState> : MonoBehaviour, IAutomachineState<TState> where TState : Enum
     {
         [Inject] protected readonly AutomachineCore<TState> stateMachine;

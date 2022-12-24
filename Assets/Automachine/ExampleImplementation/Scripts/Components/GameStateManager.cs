@@ -16,6 +16,7 @@ public class GameStateManager : AutomachineEntity<GameState>
         }
     }
 
+    //REVIEW: niepotrzebny Update. Jeśli ma coś zobrazować, to potrzebny jest przynajmniej jakiś komentarz
     protected override void Update()
     {
         base.Update();

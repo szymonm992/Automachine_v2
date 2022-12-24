@@ -11,9 +11,11 @@ using Automachine.Scripts.Components;
 using Automachine.Scripts.Models;
 using Automachine.Scripts.Signals;
 
+//REVIEW: to się chyba powinno znaleźć w nejmspejsie
 public class StateInstaller : MonoInstaller
 {
 
+    //REVIEW: w nowym C# można po prostu napisać AutomachineDebugSettings debugSettings = new(); i jest zwięźlej
     [SerializeField] private AutomachineDebugSettings debugSettings = new AutomachineDebugSettings();
 
     public override void InstallBindings()
@@ -31,12 +33,13 @@ public class StateInstaller : MonoInstaller
         Container.BindInstance(debugSettings).AsCached().NonLazy();
 
         var enumsOnGameObject = SearchForEnumWithAttributeOnGameObject<AutomachineStatesAttribute>();
-
+        
         if(enumsOnGameObject.Any())
         {
             foreach (Type type in enumsOnGameObject)
             {
                 object[] args = { type };
+                //REVIEW: użyj nameof zamiast gołych stringów. Będzie łatwiej śledzić użycia funkcji
                 InvokeGenericMethod("InstallStates", type, args);
                 InvokeGenericMethod("CreateAndDeclareSignals", type, null);
             }
@@ -131,6 +134,8 @@ public class StateInstaller : MonoInstaller
         }
     }
 
+    //REVIEW: skoro w tych dwóch funkcjach zwracasz IEnumerable, to nie ma potrzeby alokować tej listy na zaś
+    //możesz zwracać kolejne wartości przez yield return cośtam;
     private IEnumerable<Type> SearchForClassWithAttribute<T>() where T : Attribute
     {
         List<Type> selectedSignalTypes = new();
@@ -144,6 +149,10 @@ public class StateInstaller : MonoInstaller
     
     private IEnumerable<Type> SearchForEnumWithAttributeOnGameObject<T>() where T : Attribute
     {
+        //REVIEW: ta logika mi się wydaje strasznie pokręcona. Najpierw zbierasz wszystkie enumy z assembly
+        //a dopiero potem sprawdzasz, czy na tym Game Objectcie jest odpowiedni komponent.
+        //czemu najpierw nie zbierzesz komponentu a dopiero potem nie wyłuskasz z niego informacji o enumie?
+        //i tak używasz gęsto refleksji, a byłoby czyściej w tę stronę.
         List<Type> allTypesInProject = new();
         List<Type> selectedEnumTypes = new();
         var assemblies = AppDomain.CurrentDomain.GetAssemblies();
@@ -156,6 +165,7 @@ public class StateInstaller : MonoInstaller
 
         foreach (Type enumType in allTypesInProject)
         {
+            //REVIEW: nameof zamiast gołego stringa
             var methodInfoValidation = typeof(StateInstaller).GetMethod("ValidateGameObjectHasEntity");
             var entityValidator = methodInfoValidation.MakeGenericMethod(enumType);
             object[] args = { enumType, selectedEnumTypes };
